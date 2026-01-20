@@ -1,50 +1,30 @@
-import sys
+test_cases = int(input())
 
-def fractional_knapsack(items, capacity):
-    # Sort items by value/weight ratio in descending order
-    items.sort(key=lambda x: x[0] / x[1], reverse=True)
+for _ in range(test_cases):
+    item_count, max_capacity = map(int, input().split())
+    objects = []
 
-    total_value = 0.0
-    remaining_capacity = capacity
+    for _ in range(item_count):
+        item_value, item_weight = map(int, input().split())
+        value_density = item_value / item_weight
+        objects.append((value_density, item_value, item_weight))
 
-    for value, weight in items:
+    # Sort by value density (descending)
+    objects.sort(key=lambda x: x[0], reverse=True)
+
+    max_value = 0.0
+    remaining_capacity = max_capacity
+
+    for density, value, weight in objects:
         if remaining_capacity == 0:
             break
+
         if weight <= remaining_capacity:
-            total_value += value
+            max_value += value
             remaining_capacity -= weight
         else:
-            fraction = remaining_capacity / weight
-            total_value += value * fraction
-            remaining_capacity = 0
+            max_value += density * remaining_capacity
+            break
 
-    return total_value
+    print(f"{max_value:.6f}")
 
-
-def main():
-    data = sys.stdin.read().strip().split()
-    idx = 0
-    t = int(data[idx])
-    idx += 1
-
-    results = []
-    for _ in range(t):
-        n = int(data[idx])
-        w = int(data[idx + 1])
-        idx += 2
-
-        items = []
-        for _ in range(n):
-            v = int(data[idx])
-            wt = int(data[idx + 1])
-            idx += 2
-            items.append((v, wt))
-
-        max_value = fractional_knapsack(items, w)
-        results.append(f"{max_value:.6f}")
-
-    print("\n".join(results))
-
-
-if __name__ == "__main__":
-    main()
